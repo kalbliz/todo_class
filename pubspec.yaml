@@ -1,0 +1,53 @@
+name: todo_class
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  fl_chart: ^1.2.0
+  flutter:
+    sdk: flutter
+  flutter_native_splash: ^2.4.8
+  flutter_svg: ^2.3.0
+  go_router: ^17.5.0
+  google_fonts: ^8.2.1
+  intl: ^0.20.3
+  path_provider: ^2.1.6
+  shared_preferences: ^2.5.5
+  table_calendar: ^3.2.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+flutter:
+  uses-material-design: true
+
+  # Each subfolder must be listed — Flutter does NOT include nested folders automatically.
+  assets:
+    # Icons (PNG/JPG from Figma, etc.)
+    - assets/icons/
+    - assets/icons/bottom_nav/
+    - assets/icons/common/
+    - assets/icons/tasks/
+    - assets/icons/auth/
+    - assets/icons/profile/
+
+    # SVG
+    - assets/svg/
+    - assets/svg/icons/
+    - assets/svg/illustrations/
+
+    # Images
+    - assets/images/
+    - assets/images/brand/
+    - assets/images/illustrations/
+    - assets/images/backgrounds/
+    - assets/images/empty_states/
+    - assets/images/onboarding/
+
+    # Lottie / other motion assets (optional later)
+    - assets/animations/

@@ -1,0 +1,12 @@
+/// Data for one onboarding slide.
+class OnboardingSlide {
+  const OnboardingSlide({
+    required this.title,
+    required this.description,
+    required this.imagePath,
+  });
+
+  final String title;
+  final String description;
+  final String imagePath;
+}
