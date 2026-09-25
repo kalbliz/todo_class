@@ -37,9 +37,9 @@ abstract final class AppAssets {
   // --- Illustrations / empty states ---
   static const String emptyTasks = 'assets/images/empty_states/empty_tasks.png';
   static const String emptyFocus = 'assets/images/empty_states/empty_focus.png';
-  static const String onboarding1 = 'assets/images/onboarding/step_1.png';
-  static const String onboarding2 = 'assets/images/onboarding/step_2.png';
-  static const String onboarding3 = 'assets/images/onboarding/step_3.png';
+  static const String onboarding1 = 'assets/images/onboarding/Frame1.png';
+  static const String onboarding2 = 'assets/images/onboarding/Frame2.png';
+  static const String onboarding3 = 'assets/images/onboarding/Frame3.png';
 
   // --- Backgrounds ---
   static const String bgSplash = 'assets/images/backgrounds/splash.png';

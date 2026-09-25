@@ -45,6 +45,7 @@ class _SplashPageState extends State<SplashPage> {
     return const Scaffold(
       backgroundColor: Color(0xFF4A6CF7),
       body: SizedBox.shrink(),
+  
     );
   }
 }

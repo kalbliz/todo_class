@@ -23,6 +23,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
   bool get _isLastSlide => _currentIndex == _slides.length - 1;
 
+@override
+void initState(){
+print('got here');
+super.initState();
+}
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -49,29 +55,31 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(leading: Icon(Icons.abc),),
       body: SafeArea(
         child: Column(
           children: [
+            Text('data',style: TextStyle(color: Colors.white),),
             Align(
-              alignment: Alignment.centerRight,
+              alignment: Alignment.centerLeft,
               child: AppTextButton(
                 label: 'Skip',
                 onPressed: _finish,
               ),
             ),
-            Expanded(
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: _slides.length,
-                onPageChanged: (index) {
-                  setState(() => _currentIndex = index);
-                },
-                itemBuilder: (context, index) {
-                  final slide = _slides[index];
-                  return _OnboardingSlideView(slide: slide);
-                },
-              ),
-            ),
+            // Expanded(
+            //   child: PageView.builder(
+            //     controller: _pageController,
+            //     itemCount: _slides.length,
+            //     onPageChanged: (index) {
+            //       setState(() => _currentIndex = index);
+            //     },
+            //     itemBuilder: (context, index) {
+            //       final slide = _slides[index];
+            //       return _OnboardingSlideView(slide: slide);
+            //     },
+            //   ),
+            // ),
             _DotIndicator(
               count: _slides.length,
               currentIndex: _currentIndex,

@@ -5,21 +5,21 @@ import 'package:todo_class/features/onboarding/models/onboarding_slide.dart';
 abstract final class OnboardingData {
   static const List<OnboardingSlide> slides = [
     OnboardingSlide(
-      title: 'Organize your tasks',
+      title: 'Manage your tasks',
       description:
-          'Create, edit, and complete todos so nothing slips through the cracks.',
+          'You can easily manage all of your daily tasks in DoMe for free',
       imagePath: AppAssets.onboarding1,
     ),
     OnboardingSlide(
-      title: 'Plan your week',
+      title: 'Create daily routine',
       description:
           'Use the calendar to see what is due and stay ahead of deadlines.',
       imagePath: AppAssets.onboarding2,
     ),
     OnboardingSlide(
-      title: 'Stay focused',
+      title: 'Orgonaize your tasks',
       description:
-          'Track progress, focus on what matters, and build better habits.',
+          'You can organize your daily tasks by adding your tasks into separate categories',
       imagePath: AppAssets.onboarding3,
     ),
   ];
