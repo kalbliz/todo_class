@@ -55,7 +55,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
         child: Form(
           key: _formKey,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.min, 
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Center(

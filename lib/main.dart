@@ -11,5 +11,9 @@ Future<void> main() async {
   await LocalStorageService.instance.init();
   await TasksNotifier.instance.load();
 
+  // Remove here when skipping SplashPage (designing a specific screen).
+  // When using AppRoutes.splash again, delete this and let SplashPage remove it.
+  FlutterNativeSplash.remove();
+
   runApp(const TodoApp());
 }

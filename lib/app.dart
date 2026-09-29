@@ -10,7 +10,7 @@ class TodoApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Todo Class',
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: true,
       theme: AppTheme.light,
       routerConfig: appRouter,
     );
