@@ -8,6 +8,7 @@ class TodoModel {
     this.isCompleted = false,
     this.dueDate,
     this.createdAt,
+    this.categoryId,
   });
 
   final String id;
@@ -17,6 +18,11 @@ class TodoModel {
   final DateTime? dueDate;
   final DateTime? createdAt;
 
+  /// Null means the task is uncategorized.
+  final String? categoryId;
+
+  /// Pass [clearCategory] = true to make the task uncategorized,
+  /// because `categoryId: null` alone means "keep the current value".
   TodoModel copyWith({
     String? id,
     String? title,
@@ -24,6 +30,8 @@ class TodoModel {
     bool? isCompleted,
     DateTime? dueDate,
     DateTime? createdAt,
+    String? categoryId,
+    bool clearCategory = false,
   }) {
     return TodoModel(
       id: id ?? this.id,
@@ -32,6 +40,7 @@ class TodoModel {
       isCompleted: isCompleted ?? this.isCompleted,
       dueDate: dueDate ?? this.dueDate,
       createdAt: createdAt ?? this.createdAt,
+      categoryId: clearCategory ? null : (categoryId ?? this.categoryId),
     );
   }
 
@@ -44,6 +53,7 @@ class TodoModel {
       'isCompleted': isCompleted,
       'dueDate': dueDate?.toIso8601String(),
       'createdAt': createdAt?.toIso8601String(),
+      'categoryId': categoryId,
     };
   }
 
@@ -60,6 +70,7 @@ class TodoModel {
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'] as String)
           : null,
+      categoryId: json['categoryId'] as String?,
     );
   }
 }

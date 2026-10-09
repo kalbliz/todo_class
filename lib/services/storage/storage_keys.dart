@@ -6,5 +6,6 @@ abstract final class StorageKeys {
   static const String userEmail = 'user_email';
   static const String onboardingDone = 'onboarding_done';
   static const String tasksJson = 'tasks_json';
+  static const String categoriesJson = 'categories_json';
   static const String themeMode = 'theme_mode';
 }

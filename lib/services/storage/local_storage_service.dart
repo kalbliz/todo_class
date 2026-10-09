@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:todo_class/models/category_model.dart';
 import 'package:todo_class/models/todo_model.dart';
 import 'package:todo_class/services/storage/storage_keys.dart';
 
@@ -84,6 +85,28 @@ class LocalStorageService {
     final decoded = jsonDecode(raw) as List<dynamic>;
     return decoded
         .map((item) => TodoModel.fromJson(item as Map<String, dynamic>))
+        .toList();
+  }
+
+  // --- Categories (list → JSON string → SharedPreferences) ---
+
+  Future<void> saveCategories(List<CategoryModel> categories) async {
+    await init();
+    final encoded =
+        jsonEncode(categories.map((category) => category.toJson()).toList());
+    await _requirePrefs.setString(StorageKeys.categoriesJson, encoded);
+  }
+
+  /// Returns null when categories were never saved (first launch),
+  /// so the caller can seed the defaults.
+  Future<List<CategoryModel>?> loadCategories() async {
+    await init();
+    final raw = _requirePrefs.getString(StorageKeys.categoriesJson);
+    if (raw == null || raw.isEmpty) return null;
+
+    final decoded = jsonDecode(raw) as List<dynamic>;
+    return decoded
+        .map((item) => CategoryModel.fromJson(item as Map<String, dynamic>))
         .toList();
   }
 

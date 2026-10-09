@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:todo_class/core/router/app_navigator.dart';
 import 'package:todo_class/core/theme/app_colors.dart';
 import 'package:todo_class/core/theme/app_text_styles.dart';
+import 'package:todo_class/features/categories/notifiers/categories_notifier.dart';
 import 'package:todo_class/features/tasks/notifiers/tasks_notifier.dart';
 import 'package:todo_class/utils/buttons/app_button.dart';
+import 'package:todo_class/utils/chips/app_chip.dart';
 import 'package:todo_class/utils/dialogs/app_dialog.dart';
 
 class TaskDetailPage extends StatelessWidget {
@@ -19,6 +21,8 @@ class TaskDetailPage extends StatelessWidget {
       listenable: notifier,
       builder: (context, _) {
         final task = notifier.findById(taskId);
+        final category =
+            CategoriesNotifier.instance.findById(task?.categoryId);
 
         return Scaffold(
           appBar: AppBar(
@@ -57,6 +61,13 @@ class TaskDetailPage extends StatelessWidget {
                         style: AppTextStyles.bodySmall,
                       ),
                       const SizedBox(height: 16),
+                      if (category != null) ...[
+                        AppChip(
+                          label: category.name,
+                          color: AppColors.categoryColor(category.colorIndex),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
                       Text(
                         task.isCompleted ? 'Completed' : 'Pending',
                         style: AppTextStyles.label,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_class/core/router/app_navigator.dart';
 import 'package:todo_class/core/theme/app_text_styles.dart';
+import 'package:todo_class/features/categories/widgets/category_picker.dart';
 import 'package:todo_class/features/tasks/notifiers/tasks_notifier.dart';
 import 'package:todo_class/utils/buttons/app_button.dart';
 import 'package:todo_class/utils/text_fields/app_text_field.dart';
@@ -18,6 +19,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  String? _categoryId;
   bool _isSaving = false;
   bool _missing = false;
 
@@ -31,6 +33,7 @@ class _EditTaskPageState extends State<EditTaskPage> {
     }
     _titleController.text = task.title;
     _descriptionController.text = task.description;
+    _categoryId = task.categoryId;
   }
 
   @override
@@ -51,6 +54,8 @@ class _EditTaskPageState extends State<EditTaskPage> {
       existing.copyWith(
         title: _titleController.text.trim(),
         description: _descriptionController.text.trim(),
+        categoryId: _categoryId,
+        clearCategory: _categoryId == null,
       ),
     );
     if (!mounted) return;
@@ -107,6 +112,11 @@ class _EditTaskPageState extends State<EditTaskPage> {
               label: 'Description',
               hint: 'Optional details',
               maxLines: 4,
+            ),
+            const SizedBox(height: 16),
+            CategoryPicker(
+              selectedId: _categoryId,
+              onChanged: (id) => setState(() => _categoryId = id),
             ),
             const SizedBox(height: 24),
             AppButton(
