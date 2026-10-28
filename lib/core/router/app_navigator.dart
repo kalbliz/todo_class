@@ -50,6 +50,10 @@ abstract final class AppNavigator {
     context.pushReplacement(AppRoutes.login);
   }
 
+  static void replaceWithfirst(BuildContext context) {
+    context.pushReplacement(AppRoutes.first);
+  }
+
   static void replaceWithRegister(BuildContext context) {
     context.pushReplacement(AppRoutes.register);
   }

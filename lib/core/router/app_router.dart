@@ -6,7 +6,7 @@ import 'package:todo_class/features/shell/views/main_shell.dart';
 /// Single go_router configuration for the whole app.
 final GoRouter appRouter = GoRouter(
   // While designing UI, jump straight to a screen. Restore splash when done.
-  initialLocation: AppRoutes.splash,
+  initialLocation: AppRoutes.tasks,
   routes: [
     // Entry / auth — use replace / go so user cannot back into these.
     GoRoute(
@@ -18,6 +18,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.onboarding,
       name: 'onboarding',
       builder: (context, state) => AppPages.onboarding(),
+    ),
+     GoRoute(
+      path: AppRoutes.onboarding,
+      name: 'first',
+      builder: (context, state) => AppPages.first(),
     ),
     GoRoute(
       path: AppRoutes.login,

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:todo_class/features/auth/views/First_page.dart';
 import 'package:todo_class/features/auth/views/login_page.dart';
 import 'package:todo_class/features/auth/views/register_page.dart';
 import 'package:todo_class/features/calendar/views/calendar_page.dart';
 import 'package:todo_class/features/focus/views/focus_page.dart';
 import 'package:todo_class/features/home/views/home_page.dart';
+import 'package:todo_class/features/home/views/index.dart';
 import 'package:todo_class/features/onboarding/views/onboarding_page.dart';
 import 'package:todo_class/features/profile/views/profile_page.dart';
 import 'package:todo_class/features/settings/views/settings_page.dart';
@@ -19,6 +21,9 @@ abstract final class AppPages {
   static Widget splash() => const SplashPage();
 
   static Widget onboarding() => const OnboardingPage();
+
+  static Widget first() => const FirstPage();
+
 
   static Widget login() => const LoginPage();
 

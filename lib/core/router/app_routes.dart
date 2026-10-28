@@ -3,6 +3,7 @@ abstract final class AppRoutes {
   // Auth / entry
   static const String splash = '/';
   static const String onboarding = '/onboarding';
+    static const String first = '/first';
   static const String login = '/login';
   static const String register = '/register';
 
