@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:todo_class/core/theme/app_colors.dart';
 import 'package:todo_class/core/theme/app_text_styles.dart';
+import 'package:todo_class/features/categories/widgets/category_picker.dart';
 import 'package:todo_class/features/tasks/notifiers/tasks_notifier.dart';
 import 'package:todo_class/features/tasks/widgets/addCategory.dart';
 import 'package:todo_class/utils/bottom_sheets/app_bottom_sheet.dart';
@@ -248,6 +249,7 @@ int? selectedIndex; // Tracks the currently picked container index (0-9)
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
+  String? _categoryId;
   bool _isSaving = false;
 
   @override
@@ -263,7 +265,8 @@ int? selectedIndex; // Tracks the currently picked container index (0-9)
     setState(() => _isSaving = true);
     await TasksNotifier.instance.addTask(
       title: _titleController.text,
-      description: _descriptionController.text, 
+      description: _descriptionController.text,
+      categoryId: _categoryId,
     );
     if (!mounted) return;
     Navigator.of(context).pop();
@@ -312,6 +315,11 @@ int? selectedIndex; // Tracks the currently picked container index (0-9)
                 hint: 'Optional details',
                 maxLines: 3,
                 textInputAction: TextInputAction.done,
+              ),
+              const SizedBox(height: 12),
+              CategoryPicker(
+                selectedId: _categoryId,
+                onChanged: (id) => setState(() => _categoryId = id),
               ),
               const SizedBox(height: 20),
                Row(

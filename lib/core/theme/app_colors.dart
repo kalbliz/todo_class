@@ -14,4 +14,20 @@ abstract final class AppColors {
   static const Color success = Color(0xFF22C55E);
   static const Color warning = Color(0xFFF59E0B);
   static const Color disabled = Color(0xFFD1D5DB);
+
+  /// Category colors. Categories store an index into this list,
+  /// so only append new colors (never reorder) to keep saved data valid.
+  static const List<Color> categoryPalette = [
+    Color(0xFF4A6CF7),
+    Color(0xFF22C55E),
+    Color(0xFFF59E0B),
+    Color(0xFFEF4444),
+    Color(0xFF8B5CF6),
+    Color(0xFF06B6D4),
+    Color(0xFFEC4899),
+    Color(0xFF84CC16),
+  ];
+
+  static Color categoryColor(int index) =>
+      categoryPalette[index % categoryPalette.length];
 }

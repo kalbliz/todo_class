@@ -22,6 +22,9 @@ class TasksNotifier extends ChangeNotifier {
   List<TodoModel> get pendingTasks =>
       _tasks.where((task) => !task.isCompleted).toList();
 
+  List<TodoModel> tasksInCategory(String categoryId) =>
+      _tasks.where((task) => task.categoryId == categoryId).toList();
+
   TodoModel? findById(String id) {
     try {
       return _tasks.firstWhere((task) => task.id == id);
@@ -48,6 +51,7 @@ class TasksNotifier extends ChangeNotifier {
     required String title,
     String description = '',
     DateTime? dueDate,
+    String? categoryId,
   }) async {
     final task = TodoModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -55,6 +59,7 @@ class TasksNotifier extends ChangeNotifier {
       description: description.trim(),
       dueDate: dueDate,
       createdAt: DateTime.now(),
+      categoryId: categoryId,
     );
     _tasks.insert(0, task);
     notifyListeners();
@@ -80,6 +85,17 @@ class TasksNotifier extends ChangeNotifier {
 
   Future<void> deleteTask(String id) async {
     _tasks.removeWhere((task) => task.id == id);
+    notifyListeners();
+    await _persist();
+  }
+
+  /// Used when a category is deleted: its tasks become uncategorized.
+  Future<void> uncategorizeTasks(String categoryId) async {
+    for (var i = 0; i < _tasks.length; i++) {
+      if (_tasks[i].categoryId == categoryId) {
+        _tasks[i] = _tasks[i].copyWith(clearCategory: true);
+      }
+    }
     notifyListeners();
     await _persist();
   }
