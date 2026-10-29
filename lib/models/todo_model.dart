@@ -1,7 +1,9 @@
+import 'package:todo_class/models/category_model.dart';
+
 /// Simple Todo data model.
 /// Logic/UI should depend on this model, not on raw maps.
 class TodoModel {
-  const TodoModel({
+  TodoModel({
     required this.id,
     required this.title,
     this.description = '',
@@ -9,17 +11,21 @@ class TodoModel {
     this.dueDate,
     this.createdAt,
     this.categoryId,
+    this.category,
+    this.priority = 0
   });
 
   final String id;
   final String title;
   final String description;
-  final bool isCompleted;
+  bool isCompleted;
   final DateTime? dueDate;
   final DateTime? createdAt;
+  final int priority;
 
   /// Null means the task is uncategorized.
   final String? categoryId;
+  final CategoryModel? category;
 
   /// Pass [clearCategory] = true to make the task uncategorized,
   /// because `categoryId: null` alone means "keep the current value".
@@ -32,6 +38,8 @@ class TodoModel {
     DateTime? createdAt,
     String? categoryId,
     bool clearCategory = false,
+    CategoryModel? category,
+    int priority = 0,
   }) {
     return TodoModel(
       id: id ?? this.id,
@@ -41,6 +49,8 @@ class TodoModel {
       dueDate: dueDate ?? this.dueDate,
       createdAt: createdAt ?? this.createdAt,
       categoryId: clearCategory ? null : (categoryId ?? this.categoryId),
+      category: category ,
+      priority: priority 
     );
   }
 
@@ -54,6 +64,8 @@ class TodoModel {
       'dueDate': dueDate?.toIso8601String(),
       'createdAt': createdAt?.toIso8601String(),
       'categoryId': categoryId,
+      'category': category?.toJson(),
+      "priority": priority
     };
   }
 
@@ -71,6 +83,10 @@ class TodoModel {
           ? DateTime.tryParse(json['createdAt'] as String)
           : null,
       categoryId: json['categoryId'] as String?,
+      category: json['category'] != null
+          ? CategoryModel.fromJson(json['category'] as Map<String, dynamic>)
+          : null,
+      priority: json['priority'] as int? ?? 0,
     );
   }
 }

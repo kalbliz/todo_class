@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_class/core/theme/app_colors.dart';
 import 'package:todo_class/core/theme/app_text_styles.dart';
 import 'package:todo_class/features/categories/notifiers/categories_notifier.dart';
 import 'package:todo_class/models/category_model.dart';
@@ -36,8 +37,11 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
     setState(() => _isSaving = true);
-    final category =
-        await CategoriesNotifier.instance.addCategory(_nameController.text);
+    final category = await CategoriesNotifier.instance.addCategory(
+      _nameController.text,
+      AppColors.categoryPalette[CategoriesNotifier.instance.categories.length %
+          AppColors.categoryPalette.length],
+    );
     if (!mounted) return;
     Navigator.of(context).pop(category);
   }

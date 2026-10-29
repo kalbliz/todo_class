@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:todo_class/core/theme/app_colors.dart';
 import 'package:todo_class/features/tasks/notifiers/tasks_notifier.dart';
 import 'package:todo_class/models/category_model.dart';
@@ -88,13 +89,13 @@ class CategoriesNotifier extends ChangeNotifier {
   }
 
   /// Adds a category and returns it (null if the name is invalid).
-  Future<CategoryModel?> addCategory(String name) async {
+  Future<CategoryModel?> addCategory(String name, Color? color) async {
     if (validateName(name) != null) return null;
 
     final category = CategoryModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       name: name.trim(),
-      colorIndex: _categories.length % AppColors.categoryPalette.length,
+      color: color ?? Colors.grey,
     );
     _categories.add(category);
     notifyListeners();
