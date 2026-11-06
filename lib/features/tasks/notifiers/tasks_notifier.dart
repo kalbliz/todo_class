@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:todo_class/features/categories/notifiers/categories_notifier.dart';
 import 'package:todo_class/models/todo_model.dart';
 import 'package:todo_class/services/storage/local_storage_service.dart';
 
@@ -52,7 +53,9 @@ class TasksNotifier extends ChangeNotifier {
     String description = '',
     DateTime? dueDate,
     String? categoryId,
+    int priority = 0,
   }) async {
+    final category = CategoriesNotifier.instance.findById(categoryId);
     final task = TodoModel(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       title: title.trim(),
@@ -60,8 +63,11 @@ class TasksNotifier extends ChangeNotifier {
       dueDate: dueDate,
       createdAt: DateTime.now(),
       categoryId: categoryId,
+      category: category,
+      priority: priority,
     );
     _tasks.insert(0, task);
+    debugPrint('Added todo: $task');
     notifyListeners();
     await _persist();
   }

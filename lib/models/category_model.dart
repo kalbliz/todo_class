@@ -19,6 +19,17 @@ class CategoryModel {
   /// Default categories are seeded on first launch and cannot be deleted.
   final bool isDefault;
 
+  @override
+  String toString() {
+    return 'CategoryModel('
+        'id: $id, '
+        'name: $name, '
+        'colorIndex: $colorIndex, '
+        'color: $color, '
+        'isDefault: $isDefault'
+        ')';
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

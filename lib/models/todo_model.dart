@@ -54,6 +54,21 @@ class TodoModel {
     );
   }
 
+  @override
+  String toString() {
+    return 'TodoModel('
+        'id: $id, '
+        'title: $title, '
+        'description: $description, '
+        'isCompleted: $isCompleted, '
+        'dueDate: $dueDate, '
+        'createdAt: $createdAt, '
+        'categoryId: $categoryId, '
+        'category: $category, '
+        'priority: $priority'
+        ')';
+  }
+
   /// Convert to a map so we can jsonEncode it for SharedPreferences.
   Map<String, dynamic> toJson() {
     return {

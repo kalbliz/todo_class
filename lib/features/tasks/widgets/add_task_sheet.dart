@@ -271,20 +271,29 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
   }
 
   Future<void> _save() async {
-    if (!(_formKey.currentState?.validate() ?? false)) ;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
     setState(() => _isSaving = true);
+    DateTime? dueDate;
+    if (_cachedDate != null) {
+      dueDate = DateTime(
+        _cachedDate!.year,
+        _cachedDate!.month,
+        _cachedDate!.day,
+        _cachedTime?.hour ?? 0,
+        _cachedTime?.minute ?? 0,
+      );
+    }
+
     await TasksNotifier.instance.addTask(
       title: _titleController.text,
       description: _descriptionController.text,
       categoryId: _categoryId,
+      dueDate: dueDate,
+      priority: selectedIndex ?? 0,
     );
-    await TasksNotifier.instance
-        .load(); // Refresh the task list after adding a new task
-    debugPrint('Updated tasks: ${TasksNotifier.instance.tasks}');
     if (!mounted) return;
     Navigator.of(context).pop();
-    return;
   }
 
   @override
@@ -871,7 +880,7 @@ class _AddTaskSheetState extends State<AddTaskSheet> {
                     tooltip: 'Flag',
                     onPressed: () => showNumberedBottomSheet(context),
                   ),
-                  SizedBox(width: 152),
+                  const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.send, color: Colors.blue),
                     tooltip: 'Send',

@@ -1,15 +1,10 @@
-
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
-// import 'package:table_calendar/table_calendar.dart';
-// import 'package:todo_class/core/theme/app_colors.dart';
-import 'package:todo_class/features/calendar/notifiers/calendar_notifier.dart';
 import 'package:horizontal_week_calendar/horizontal_week_calendar.dart';
 import 'package:todo_class/features/calendar/views/calender2.dart';
+import 'package:todo_class/features/home/views/editTask.dart';
+import 'package:todo_class/features/home/widgets/home_task_card.dart';
 import 'package:todo_class/features/tasks/notifiers/tasks_notifier.dart';
 import 'package:todo_class/models/todo_model.dart';
-import 'package:todo_class/services/storage/local_storage_service.dart';
-
 
 /// Calendar tab inside the bottom-nav shell.
 class CalendarPage extends StatefulWidget {
@@ -20,100 +15,38 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  late final CalendarNotifier _notifier;
+  /// Always starts on today.
+  DateTime _selectedDate = DateTime.now();
   int _activeIndex = 0;
-  int? _selectedValue = 1;
- final TextEditingController searchController = TextEditingController();
 
-  String searchText = '';
-  String selectedFilter = 'Today';
-  final List<TodoModel> tasks = [];
-  final List<TodoModel> filteredTasksByDay = [];
-
-  Future<void> readTaskList() async {
-    await LocalStorageService.instance.init();
-    final loadedTasks = TasksNotifier.instance.tasks;
-    setState(() {
-      tasks.clear();
-      tasks.addAll(loadedTasks);
-    });
+  bool _isSameDay(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
-  Future<void> filterTasksByDate() async {
-    filteredTasksByDay.addAll(
-      tasks.where((task) {
-        return task.dueDate?.day == DateTime.now().day &&
-            task.dueDate?.month == DateTime.now().month &&
-            task.dueDate?.year == DateTime.now().year;
-      }).toList(),
-    );
-    setState(() {
-      filteredTasksByDay;
-    });
+  /// Tasks whose [TodoModel.dueDate] falls on [_selectedDate].
+  List<TodoModel> _tasksForSelectedDate(List<TodoModel> tasks) {
+    return tasks.where((task) {
+      final due = task.dueDate;
+      if (due == null) return false;
+      return _isSameDay(due, _selectedDate);
+    }).toList();
   }
 
-
-   
-
-  @override
-  void dispose() {
-    searchController.dispose();
-    super.dispose();
+  void _onDateChanged(DateTime date) {
+    setState(() => _selectedDate = date);
   }
 
-  List<TodoModel> get filteredTasks {
-    List<TodoModel> filtered = tasks;
-
-    if (searchText.isNotEmpty) {
-      filtered = filtered.where((task) {
-        final title = (task.title).toLowerCase();
-        return title.contains(searchText.toLowerCase());
-      }).toList();
-    }
-
-    if (selectedFilter == 'Today') {
-      // Filter tasks for today
-      filtered = filtered.where((task) {
-        // Implement your logic to filter today's tasks
-        return true; // Placeholder, replace with actual condition
-      }).toList();
-    } else if (selectedFilter == 'Completed') {
-      // Filter completed tasks
-      filtered = filtered.where((task) => task.isCompleted).toList();
-    }
-
-    return filtered;
-  }
-
-  // @override
-  // void initState() {
-  //   readTaskList();
-  //   super.initState();
-  // }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    readTaskList();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _notifier = CalendarNotifier();
-  }
-
-  // @override
-  // void dispose() {
-  //   _notifier.dispose();
-  //   super.dispose();
-  // }
+  Future<void> _onRefresh() => TasksNotifier.instance.load();
 
   @override
   Widget build(BuildContext context) {
+    final notifier = TasksNotifier.instance;
+
     return ListenableBuilder(
-      listenable: _notifier,
+      listenable: notifier,
       builder: (context, _) {
+        final filteredTasks = _tasksForSelectedDate(notifier.tasks);
+
         return Scaffold(
           appBar: AppBar(
             title: const Text(
@@ -126,9 +59,9 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
           body: Column(
             children: [
-              CustomWeekCalendarPage(),
-              SizedBox(
-                height: 0,
+              _WeekCalendar(
+                selectedDate: _selectedDate,
+                onDateChange: _onDateChanged,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -137,203 +70,109 @@ class _CalendarPageState extends State<CalendarPage> {
                     borderRadius: BorderRadius.circular(4),
                     color: const Color.fromARGB(255, 224, 218, 218),
                   ),
-                  padding: const EdgeInsets.all(0),
-                  // Optional: container background styling
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: Row(
-                        children: [
-                          // First Button: Current Page
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4.0,
-                              ),
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  // 2. Change color to blue if active, otherwise grey
-                                  backgroundColor: _activeIndex == 1
-                                      ? Colors.blue
-                                      : Colors.grey[400],
-                                  foregroundColor: Colors.white,
-                                  minimumSize: const Size.fromHeight(49),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 15,
+                      horizontal: 10,
+                    ),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _activeIndex == 0
+                                    ? Colors.blue
+                                    : Colors.grey[400],
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size.fromHeight(49),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    _activeIndex = 0;
-                                  });
-                                  // 3. Add your navigation logic for the current page here if needed
-                                },
-                                child: const Text('Current Page'),
                               ),
+                              onPressed: () {
+                                setState(() => _activeIndex = 0);
+                              },
+                              child: const Text('Current Page'),
                             ),
                           ),
-
-                          // Second Button: New Page
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 4.0,
-                              ),
-                              child: ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                  // 2. Change color to blue if active, otherwise grey
-                                  backgroundColor: _activeIndex == 0
-                                      ? Colors.blue
-                                      : Colors.grey[400],
-                                  foregroundColor: Colors.white,
-                                  minimumSize: const Size.fromHeight(49),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(4.0),
-                                  ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 4),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: _activeIndex == 1
+                                    ? Colors.blue
+                                    : Colors.grey[400],
+                                foregroundColor: Colors.white,
+                                minimumSize: const Size.fromHeight(49),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(4),
                                 ),
-                                onPressed: () {
-                                  setState(() {
-                                    _activeIndex = 1;
-                                  });
-
-                                  // 3. Navigate to your new page
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          const Calendar2Page(),
-                                    ),
-                                  );
-                                },
-                                child: const Text('New Page'),
                               ),
+                              onPressed: () {
+                                setState(() => _activeIndex = 1);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Calendar2Page(),
+                                  ),
+                                );
+                              },
+                              child: const Text('New Page'),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-              SizedBox(
-                height: 16,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 224, 218, 218),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child:
-                      // [
-                      Row(
-                    children: [
-                      Radio<int>(
-                        value: 1, // The unique value assigned to this specific radio button
-                        groupValue: _selectedValue, // The currently active choice
-                        onChanged: (int? value) {
-                          // 2. Wrap the state update inside setState to trigger a redraw
-                          setState(() {
-                            _selectedValue = value;
-                          });
-                        },
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Do Math Homework",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w400,
+              const SizedBox(height: 16),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: _onRefresh,
+                  child: filteredTasks.isEmpty
+                      ? ListView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          children: [
+                            const SizedBox(height: 48),
+                            Text(
+                              'No tasks due on '
+                              '${_selectedDate.day}/${_selectedDate.month}/${_selectedDate.year}',
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(
+                                color: Color(0xFF777777),
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                          Row(
-                            children: [
-                              Text("Today At 16:45"),
-                              SizedBox(
-                                width: 25,
-                              ),
-
-                              // 1. The Blue Button
-                              ElevatedButton(
-                                onPressed: () {},
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      Colors.blue, // Sets button background to blue
-                                  foregroundColor:
-                                      Colors.white, // Sets text color to white
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 7.5,
+                          ],
+                        )
+                      : ListView.builder(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          itemCount: filteredTasks.length,
+                          itemBuilder: (context, index) {
+                            final task = filteredTasks[index];
+                            return HomeTaskCard(
+                              task: task,
+                              onToggleComplete: (_) =>
+                                  notifier.toggleComplete(task.id),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const EditTask(),
                                   ),
-                                  fixedSize: const Size(90, 29),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      4,
-                                    ), // Adjust the number for more/less roundness
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(Iconsax.book),
-                                    SizedBox(
-                                      width: 2,
-                                    ),
-                                    Text(
-                                      "University",
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                  ],
-                                ),
-                              ),
-
-                              const SizedBox(
-                                width: 10,
-                              ), // Adds spacing between the two buttons
-
-                              // 2. The Transparent / Outlined Button
-                              OutlinedButton(
-                                onPressed: () {},
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor:
-                                      Colors.blue, // Sets text and border color
-                                  side: const BorderSide(
-                                    color: Colors.blue,
-                                  ), // Blue border outline
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 7.5,
-                                  ),
-                                  fixedSize: const Size(20, 25),
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(
-                                      4,
-                                    ), // Adjust the number for more/less roundness
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(Iconsax.flag),
-                                    SizedBox(
-                                      width: 3,
-                                    ),
-                                    Text(
-                                      "1",
-                                      style: TextStyle(fontSize: 18),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                                );
+                              },
+                            );
+                          },
+                        ),
                 ),
               ),
             ],
@@ -344,60 +183,37 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 }
 
-class CustomWeekCalendarPage extends StatefulWidget {
-  const CustomWeekCalendarPage({super.key});
+class _WeekCalendar extends StatelessWidget {
+  const _WeekCalendar({
+    required this.selectedDate,
+    required this.onDateChange,
+  });
 
-  @override
-  State<CustomWeekCalendarPage> createState() =>
-      _CustomWeekCalendarPageState();
-}
-
-class _CustomWeekCalendarPageState extends State<CustomWeekCalendarPage> {
-  DateTime selectedDate = DateTime.now();
+  final DateTime selectedDate;
+  final ValueChanged<DateTime> onDateChange;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          // FIX: In 0.0.7, you must wrap the calendar in a sized container inside Columns
-          SizedBox(
-            height: 125, // Safely accommodates the top navbar and day items
-            child: HorizontalWeekCalendar(
-              minDate: DateTime.now().subtract(
-                const Duration(days: 30),
-              ),
-              maxDate: DateTime.now().add(
-                const Duration(days: 30),
-              ),
-              initialDate: selectedDate,
-              onDateChange: (date) {
-                setState(() {
-                  selectedDate = date;
-                });
-              },
-              monthColor: Colors.indigo,
-              activeBackgroundColor: Colors.indigo,
-              activeTextColor: Colors.white,
-              inactiveBackgroundColor: Colors.indigo.withOpacity(0.08),
-              inactiveTextColor: Colors.indigo,
-              disabledBackgroundColor: Colors.grey.shade200,
-              disabledTextColor: Colors.grey,
-              weekStartFrom: WeekStartFrom.Monday,
-            ),
-          ),
+    final today = DateTime.now();
 
-          // const SizedBox(height: 40),
-          // Text(
-          //   "Selected Date:",
-          //   style: TextStyle(color: Colors.grey[600], fontSize: 14),
-          // ),
-          // Text(
-          //   "${selectedDate.day}/${selectedDate.month}/${selectedDate.year}",
-          //   style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-          // ),
-        ],
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: SizedBox(
+        height: 125,
+        child: HorizontalWeekCalendar(
+          minDate: today.subtract(const Duration(days: 30)),
+          maxDate: today.add(const Duration(days: 30)),
+          initialDate: selectedDate,
+          onDateChange: onDateChange,
+          monthColor: Colors.indigo,
+          activeBackgroundColor: Colors.indigo,
+          activeTextColor: Colors.white,
+          inactiveBackgroundColor: Colors.indigo.withValues(alpha: 0.08),
+          inactiveTextColor: Colors.indigo,
+          disabledBackgroundColor: Colors.grey.shade200,
+          disabledTextColor: Colors.grey,
+          weekStartFrom: WeekStartFrom.Monday,
+        ),
       ),
     );
   }
