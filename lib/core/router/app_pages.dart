@@ -6,6 +6,7 @@ import 'package:todo_class/features/calendar/views/calendar_page.dart';
 import 'package:todo_class/features/focus/views/focus_page.dart';
 import 'package:todo_class/features/home/views/home_page.dart';
 import 'package:todo_class/features/home/views/index.dart';
+import 'package:todo_class/features/home/views/refactored_home.dart';
 import 'package:todo_class/features/onboarding/views/onboarding_page.dart';
 import 'package:todo_class/features/profile/views/profile_page.dart';
 import 'package:todo_class/features/settings/views/settings_page.dart';

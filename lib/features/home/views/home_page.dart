@@ -22,15 +22,16 @@ class _HomePageState extends State<HomePage> {
 
   String searchText = '';
   String selectedFilter = 'Today';
-  final List<TodoModel> tasks = [];
+   List<TodoModel> tasks = [];
   final List<TodoModel> filteredTasksByDay = [];
 
   Future<void> readTaskList() async {
     await LocalStorageService.instance.init();
     final loadedTasks = TasksNotifier.instance.tasks;
+    debugPrint('got here');
     setState(() {
       tasks.clear();
-      tasks.addAll(loadedTasks);
+      tasks=loadedTasks;
     });
   }
 

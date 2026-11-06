@@ -6,6 +6,10 @@ import 'package:iconsax/iconsax.dart';
 import 'package:todo_class/features/calendar/notifiers/calendar_notifier.dart';
 import 'package:horizontal_week_calendar/horizontal_week_calendar.dart';
 import 'package:todo_class/features/calendar/views/calender2.dart';
+import 'package:todo_class/features/tasks/notifiers/tasks_notifier.dart';
+import 'package:todo_class/models/todo_model.dart';
+import 'package:todo_class/services/storage/local_storage_service.dart';
+
 
 /// Calendar tab inside the bottom-nav shell.
 class CalendarPage extends StatefulWidget {
@@ -19,6 +23,79 @@ class _CalendarPageState extends State<CalendarPage> {
   late final CalendarNotifier _notifier;
   int _activeIndex = 0;
   int? _selectedValue = 1;
+ final TextEditingController searchController = TextEditingController();
+
+  String searchText = '';
+  String selectedFilter = 'Today';
+  final List<TodoModel> tasks = [];
+  final List<TodoModel> filteredTasksByDay = [];
+
+  Future<void> readTaskList() async {
+    await LocalStorageService.instance.init();
+    final loadedTasks = TasksNotifier.instance.tasks;
+    setState(() {
+      tasks.clear();
+      tasks.addAll(loadedTasks);
+    });
+  }
+
+  Future<void> filterTasksByDate() async {
+    filteredTasksByDay.addAll(
+      tasks.where((task) {
+        return task.dueDate?.day == DateTime.now().day &&
+            task.dueDate?.month == DateTime.now().month &&
+            task.dueDate?.year == DateTime.now().year;
+      }).toList(),
+    );
+    setState(() {
+      filteredTasksByDay;
+    });
+  }
+
+
+   
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
+  List<TodoModel> get filteredTasks {
+    List<TodoModel> filtered = tasks;
+
+    if (searchText.isNotEmpty) {
+      filtered = filtered.where((task) {
+        final title = (task.title).toLowerCase();
+        return title.contains(searchText.toLowerCase());
+      }).toList();
+    }
+
+    if (selectedFilter == 'Today') {
+      // Filter tasks for today
+      filtered = filtered.where((task) {
+        // Implement your logic to filter today's tasks
+        return true; // Placeholder, replace with actual condition
+      }).toList();
+    } else if (selectedFilter == 'Completed') {
+      // Filter completed tasks
+      filtered = filtered.where((task) => task.isCompleted).toList();
+    }
+
+    return filtered;
+  }
+
+  // @override
+  // void initState() {
+  //   readTaskList();
+  //   super.initState();
+  // }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    readTaskList();
+  }
 
   @override
   void initState() {
@@ -26,11 +103,11 @@ class _CalendarPageState extends State<CalendarPage> {
     _notifier = CalendarNotifier();
   }
 
-  @override
-  void dispose() {
-    _notifier.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _notifier.dispose();
+  //   super.dispose();
+  // }
 
   @override
   Widget build(BuildContext context) {
